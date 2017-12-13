@@ -75,7 +75,7 @@ end
 
 #the big function so we can see if anything works
 
-function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString=searchTerm, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+function scrape_images_routine(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString=searchTerm, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
 
 	#setup our constants
 	const url = "https://www.google.co.in/search?q="*searchTerm*"&source=lnms&tbm=isch"
@@ -162,7 +162,7 @@ function run_scrape_from_cmdline()
 	const stream = args["-s"]
 	const parallel = args["-p"]
 	const verbose = args["-v"]
-	scrape_images(search_term, num, base_path, stream, parallel, verbose)
+	scrape_images_routine(search_term, num, base_path, stream, parallel, verbose)
 end
 
 
@@ -172,4 +172,40 @@ print(isinteractive())
 if isinteractive()
 	run_scrape_from_cmdline()
 end
+
+
+# and now for our functions allowing a greater specialisation of arguments
+
+function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString=searchTerm, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+	
+	#this is identical to the routine, we just call it
+	scrape_images_routine(searchTerm, num_images, basepath, streaming, parallel, extensions, verbose)
+end
+
+function scrape_images(searchTerm::Array{AbstractString}, num_images::Integer, basepath::AbstractString="", streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+
+	const len = length(searchTerm)
+	for i in 1:len
+		scrape_images_routine(searchTerm[i], num_images, basepath, streaming, parallel, extensions, verbose)
+	end
+end
+
+function scrape_images(searchTerm::Array{AbstractString}, num_images::Array{Integer}, basepath::AbstractString="", streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+
+	const len = length(searchTerm)
+	@assert len == length(num_images) "number of terms and number of images for each term must be the same length"
+	for i in 1:len
+		scrape_images_routine(searchTerm[i], num_images[i], basepath, streaming, parallel, extensions, verbose)
+	end
+end
+
+function scrape_images(searchTerm::Array{AbstractString}, num_images::Array{Integer}, basepath::Array{AbstractString}, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+
+	const len = length(searchTerm)
+	@assert len == length(num_images) == length(basepath) "number of terms and number of images for each term must be the same length as must the number of different basepaths for each"
+	for i in 1:len
+		scrape_images_routine(searchTerm[i], num_images[i], basepath[i], streaming, parallel, extensions, verbose)
+	end
+end
+
 		
