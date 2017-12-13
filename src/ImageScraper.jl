@@ -1,5 +1,7 @@
 module ImageScraper
 
-# package code goes here
+export scrape_images
+
+include("image_scraper.jl")
 
 end # module
