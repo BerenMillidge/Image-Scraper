@@ -4,7 +4,7 @@ using PyCall
 using WebDriver
 using Requests
 using JSON
-using FileIO
+using ArgParse
 
 
 function scrollThroughPage(driver::WebDriver.Driver)
@@ -92,6 +92,7 @@ function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath
 	get(driver, url)
 	if verbose==true
 		println("Searching for " * searchTerm)
+	end
 	
 	#if all of this works, we make the dirs for our thing
 	if !isdir(basepath)
@@ -122,24 +123,53 @@ function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath
 end
 
 
+# okay, commandline functoins
 
-#okay, and finally run the thing here
-const basepath ="/home/beren/work/julia/scrape_tests/"
-const num_pics = 20
-const search="cats"
-scrape_images(search, num_pics, basepath)
-			
+function parseCommandLine()
+	s = ArgParseSettings(prog="Julia Image Scraper with Selenium", description="An image scraper of google images written in Julia", commands_are_required=false, version="0.0.1", add_version=true)
+
+	@add_arg_table s begin
+		"search_term"
+			help="the search you want to get images from"
+			required=true
+			arg_type = String
+		"number_images"
+			help="the number of images you want to scrape"
+			required=true
+			arg_type = Int
+		"base_path"
+			help="the base path of the directory you want to save the images in"
+			arg_type=String
+			default=""
+		"-s"
+			help="whether to stream images or download them and save all at once"
+			action = :store_true
+		"-p"
+			help="whether to download images in parallel"
+			action= :store_true
+		"-v"
+			help="run the scraper in verbose mode"
+			action = :store_true
+	end
+	return parse_args(s)
+end
+
+function run_scrape_from_cmdline()
+	args = parseCommandLine()
+	const search_term = args["search_term"]
+	const num = args["number_images"]
+	const base_path = args["base_path"]
+	const stream = args["-s"]
+	const parallel = args["-p"]
+	const verbose = args["-v"]
+	scrape_images(search_term, num, base_path, stream, parallel, verbose)
+end
+
+
+print(isinteractive())
+
+#run the file from the commandline if it is active
+if isinteractive()
+	run_scrape_from_cmdline()
+end
 		
-	
-
-
-
-#we now get our image
-#println("")
-#response = get(img_url)
-#println(response)
-#println(typeof(response))
-
-#img = response.data
-#fname=searchtext *"_test_julia" * "."*img_type
-#Requests.save(response, fname)
