@@ -73,6 +73,12 @@ function requestAndSaveImage(url::AbstractString, fname::AbstractString, stream:
 	end
 end
 
+function setupDirectories()
+	if !isdir(basepath)
+		mkdir(basepath)
+	end
+end
+
 #the big function so we can see if anything works
 
 function scrape_images_routine(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString=searchTerm, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
@@ -95,9 +101,7 @@ function scrape_images_routine(searchTerm::AbstractString, num_images::Integer, 
 	end
 	
 	#if all of this works, we make the dirs for our thing
-	if !isdir(basepath)
-		mkdir(basepath)
-	end
+	setupDirectories()
 
 	img_counter::Integer = 0
 	for i in 1:number_of_scrolls
