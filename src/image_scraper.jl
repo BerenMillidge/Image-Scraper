@@ -218,9 +218,13 @@ function scrape_images(searchTerm::Array{AbstractString}, num_images::Array{Inte
 	end
 end
 
-scrape_images("gestalt", 1000, "/home/beren/work/julia/gestalt_images")
+function scrape_images(searchTerm::Array{AbstractString}, num_images::Integer, basepath::Array{AbstractString}, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
 
-
-
+	const len = length(searchTerm)
+	@assert len == length(basepath) "number of terms and number of images for each term must be the same length as must the number of different basepaths for each"
+	for i in 1:len
+		scrape_images_routine(searchTerm[i], num_images, basepath[i], streaming, parallel, extensions, verbose)
+	end
+end
 
 		
