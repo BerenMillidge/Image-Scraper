@@ -46,7 +46,7 @@ function parseImageElement(img::WebDriver.WebElement, extensions::Tuple)
 	return img_url, img_type
 end
 
-function requestAndSaveImage(url::AbstractString, fname::AbstractString, stream::Bool=false)
+function requestAndSaveImage(url::AbstractString, fname::AbstractString,img_num::Integer, stream::Bool=false)
 
 	#requests an image given a url and saves it or streams it to a file
 		
@@ -66,6 +66,7 @@ function requestAndSaveImage(url::AbstractString, fname::AbstractString, stream:
 	if stream ==false
 		try
 			res = Requests.get(url)
+			#fname = basepath *"/" * string(img_num)
 			Requests.save(res, fname)
 		catch Exception e
 			println("Image download failed: " *e)
@@ -111,8 +112,8 @@ function scrape_images_routine(searchTerm::AbstractString, num_images::Integer, 
 		for img in images
 
 			img_url, img_type = parseImageElement(img, extensions) # parse our image
-			fname = basepath*searchTerm * "_"*string(img_counter)*"."*img_type # create filename for saving
-			requestAndSaveImage(img_url, fname, streaming)
+			fname = basepath*"/"*searchTerm * "_"*string(img_counter)*"."*img_type # create filename for saving
+			requestAndSaveImage(img_url, fname,img_counter, streaming)
 			img_counter +=1
 			
 			#and we check our loop functionality
@@ -182,7 +183,10 @@ end
 
 # and now for our functions allowing a greater specialisation of arguments
 
-function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString=searchTerm, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+function scrape_images(searchTerm::AbstractString, num_images::Integer, basepath::AbstractString, streaming::Bool=false, parallel::Bool = false, extensions::Tuple=("jpg", "jpeg", "png", "gif"), verbose::Bool = true)
+
+
+	println(basepath)
 	
 	#this is identical to the routine, we just call it
 	scrape_images_routine(searchTerm, num_images, basepath, streaming, parallel, extensions, verbose)
