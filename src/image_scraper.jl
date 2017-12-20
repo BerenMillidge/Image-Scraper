@@ -73,7 +73,7 @@ function requestAndSaveImage(url::AbstractString, fname::AbstractString, stream:
 	end
 end
 
-function setupDirectories()
+function setupDirectories(basepath)
 	if !isdir(basepath)
 		mkdir(basepath)
 	end
@@ -101,7 +101,7 @@ function scrape_images_routine(searchTerm::AbstractString, num_images::Integer, 
 	end
 	
 	#if all of this works, we make the dirs for our thing
-	setupDirectories()
+	setupDirectories(basepath)
 
 	img_counter::Integer = 0
 	for i in 1:number_of_scrolls
@@ -177,6 +177,8 @@ if isinteractive()
 	run_scrape_from_cmdline()
 end
 
+#run_scrape_from_cmdline()
+
 
 # and now for our functions allowing a greater specialisation of arguments
 
@@ -211,5 +213,10 @@ function scrape_images(searchTerm::Array{AbstractString}, num_images::Array{Inte
 		scrape_images_routine(searchTerm[i], num_images[i], basepath[i], streaming, parallel, extensions, verbose)
 	end
 end
+
+scrape_images("gestalt", 1000, "/home/beren/work/julia/gestalt_images")
+
+
+
 
 		
