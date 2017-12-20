@@ -59,7 +59,7 @@ function requestAndSaveImage(url::AbstractString, fname::AbstractString,img_num:
 				end
 			end
 		catch Exception e
-			println("Image stream failed: " * e)
+			println("Image stream failed: " * string(e))
 		end
 	end
 
@@ -69,7 +69,7 @@ function requestAndSaveImage(url::AbstractString, fname::AbstractString,img_num:
 			#fname = basepath *"/" * string(img_num)
 			Requests.save(res, fname)
 		catch Exception e
-			println("Image download failed: " *e)
+			println("Image download failed: " *string(e))
 		end
 	end
 end
